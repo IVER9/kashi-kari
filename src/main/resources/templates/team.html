@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+    <title th:text="${team.name}">Hello, world!</title>
+</head>
+<body>
+<div th:if="${teamCreateSuccess}">チームを作成しました。</div>
+<div th:if="${teamUpdateSuccess}">チーム情報を更新しました。</div>
+<div th:if="${memberCreateError}">メンバーの追加に失敗しました。</div>
+<div th:if="${memberCreateSuccess}">メンバーを追加しました。</div>
+<div th:if="${memberUpdateSuccess}">メンバー情報を更新しました。</div>
+<h1 th:text="${team.name}">Hello, world!</h1>
+<a th:href="@{/team/} + ${team.id} + '/' + ${team.url} + '/setting'">チーム設定</a>
+<form method="post" th:action="@{/team/} + ${team.id} + '/' + ${team.url} + '/member'">
+    <div><label>名前:<input type="text" name="name" />さん</label></div>
+    <div><label>時給:<input type="text" name="money" />円</label></div>
+    <button type="submit">メンバー登録</button>
+</form>
+<h2>メンバー一覧</h2>
+<form method="post" th:action="@{/team/} + ${team.id} + '/' + ${team.url} + '/loan'">
+    <div><select name="fromMemberId"><option th:each="member : ${members}" th:value="${member.id}" th:text="${member.name}"></option></select>から</div>
+    <div><select name="toMemberId"><option th:each="member : ${members}" th:value="${member.id}" th:text="${member.name}"></option></select>へ</div>
+    <div><input type="text" name="task" />を</div>
+    <div><input type="text" name="time" />時間やってもらう</div>
+    <button type="submit">お願いする</button>
+</form>
+<ul>
+    <li th:each="member : ${memberDtoList}">
+        <h1><span th:text="${member.name}"></span></h1>
+        <span th:text="${member.id}"></span>：時給<span th:text="${member.money}"></span>円：作成日時<span th:text="${member.createdAt != null}? ${#dates.format(member.createdAt,'yyyy/MM/dd hh:mm')} : ''"></span>：更新日時<span th:text="${member.updatedAt != null}? ${#dates.format(member.updatedAt,'yyyy/MM/dd hh:mm')} : ''"></span>:<a th:href="@{/team/} + ${team.id} + '/' + ${team.url} + '/member/' + ${member.id}  + '/setting'">設定</a>
+        <div>
+            <h4>貸し</h4>
+            <ul>
+                <li th:each="loan : ${member.loanFrom}">
+                    <span th:text="${loan.toMemberName}"></span>に<span th:text="${loan.time}"></span>時間<span th:text="${loan.task}"></span>をやってもらったよ
+                </li>
+            </ul>
+            <h4>借り</h4>
+            <ul>
+                <li th:each="loan : ${member.loanTo}">
+                    <span th:text="${loan.fromMemberName}"></span>に言われて<span th:text="${loan.time}"></span>時間<span th:text="${loan.task}"></span>をやらされるよ
+                </li>
+            </ul>
+        </div>
+    </li>
+</ul>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+</body>
+</html>

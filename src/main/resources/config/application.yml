@@ -4,3 +4,4 @@ spring:
     username: test
     password: hoge00
     driverClassName: com.mysql.jdbc.Driver
+mybatis.configuration.mapUnderscoreToCamelCase: true

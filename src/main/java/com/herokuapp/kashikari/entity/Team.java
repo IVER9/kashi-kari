@@ -6,7 +6,7 @@ import java.util.Date;
 
 @Data
 public class Team {
-    private Long id;
+    private String id;
     private String url;
     private String name;
     private Date createdAt;

@@ -1,5 +1,5 @@
 CREATE TABLE `team` (
-  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `id` varchar(255) NOT NULL,
   `url` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
