@@ -4,4 +4,7 @@ spring:
     username: test
     password: hoge00
     driverClassName: com.mysql.jdbc.Driver
+    thymeleaf:
+        cache: false
+        mode: HTML
 mybatis.configuration.mapUnderscoreToCamelCase: true

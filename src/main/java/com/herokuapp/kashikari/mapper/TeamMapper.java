@@ -16,7 +16,7 @@ public interface TeamMapper {
     @Select("SELECT * from team where id = #{teamId} and deleted_flag = '0'")
     Team selectById(String teamId);
 
-    @Select("SELECT * from team where deleted_flag = '0' order by url")
+    @Select("SELECT * from team where deleted_flag = '0' order by created_at")
     List<Team> selectAll();
 
     @Update("UPDATE team SET name = #{name}, updated_at = now() WHERE id = #{id}")
