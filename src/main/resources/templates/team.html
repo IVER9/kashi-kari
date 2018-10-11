@@ -86,6 +86,7 @@
             </div>
         </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
     <div class="my-3 p-3 bg-white rounded shadow-sm">
         <h6 class="border-bottom border-gray pb-2 mb-0">メンバー一覧</h6>
         <div class="media text-muted pt-3" th:each="member : ${memberDtoList}">
@@ -94,22 +95,67 @@
                     <h4 class="text-gray-dark"  th:text="${member.name}">Full Name</h4>
                     <a href="#" th:href="@{/team/} + ${team.id} + '/' + ${team.url} + '/member/' + ${member.id}  + '/setting'">設定</a>
                 </div>
+                <canvas th:id="'myChart-' + ${member.id}"></canvas>
                 <span class="pt-2 d-block">時給:<span th:text="${member.money}"></span>円　作成日時:<span th:text="${member.createdAt != null}? ${#dates.format(member.createdAt,'yyyy/MM/dd hh:mm')} : ''"></span>　更新日時:<span th:text="${member.updatedAt != null}? ${#dates.format(member.updatedAt,'yyyy/MM/dd hh:mm')} : ''"></span>　ID:<span th:text="${member.id}"></span></span>
                 <div class="pt-3">
                     <h5 class="pb-2"><span class="badge badge-danger">貸し</span></h5>
                     <ul class="list-group mb-3">
                         <li class="list-group-item list-group-item-light" th:each="loan : ${member.loanFrom}">
-                            <span th:text="${loan.toMemberName}"></span>に<span th:text="${loan.time}"></span>時間<span th:text="${loan.task}"></span>をやってもらったよ
+                            <div class="row w-100 d-flex align-items-center flex-wrap">
+                                <div class="col-md-9">
+                                    <span th:text="${loan.toMemberName}"></span>に<span th:text="${loan.time}"></span>時間<span th:text="${loan.task}"></span>をやってもらったよ
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                        <div class="w-50"><strong><span th:text="${loan.time} * ${member.money}"></span>円</strong></div><form method="post" class="w-50 d-inline" th:action="@{/team/} + ${team.id} + '/' + ${team.url} + '/loan/' + ${loan.id}"><button type="submit" name="delete" class="btn btn-success w-100" style="font-size: 13px">奢った</button></form>
+                                    </div>
+                                </div>
+                            </div>
+
                         </li>
                     </ul>
                     <h5 class="pb-2"><span class="badge badge-warning">借り</span></h5>
                     <ul class="list-group">
-                        <li class="list-group-item list-group-item-light" th:each="loan : ${member.loanTo}">
-                            <span th:text="${loan.fromMemberName}"></span>に言われて<span th:text="${loan.time}"></span>時間<span th:text="${loan.task}"></span>をやらされるよ
+                        <li class="list-group-item list-group-item-light " th:each="loan : ${member.loanTo}">
+                            <div class="row w-100 d-flex align-items-center flex-wrap">
+                                <div class="col-md-9">
+                                    <span th:text="${loan.fromMemberName}"></span>に言われて<span th:text="${loan.time}"></span>時間<span th:text="${loan.task}"></span>をやらされるよ
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                        <div class="w-50"><strong><span th:text="${loan.time} * ${member.money}"></span>円</strong> </div><form method="post" class="w-50 d-inline" th:action="@{/team/} + ${team.id} + '/' + ${team.url} + '/loan/' + ${loan.id}"><button type="submit" name="delete" class="btn btn-primary w-100" style="font-size: 13px">奢ってもらった</button></form>
+                                    </div>
+                                </div>
+                            </div>
                         </li>
                     </ul>
                 </div>
             </div>
+            <script th:inline="javascript">
+                /*<![CDATA[*/
+                var memberId = /*[[${member.id}]]*/ 'memberId';
+                console.log(memberId);
+                var ctx = document.getElementById('myChart-' + memberId).getContext('2d');
+                var chart = new Chart(ctx, {
+                    // 作成したいチャートのタイプ
+                    type: 'horizontalBar',
+
+                    // データセットのデータ
+                    data: {
+                        labels: ["貸し", "借り"],
+                        datasets: [{
+                            label: "",
+                            backgroundColor: 'rgb(255, 99, 132)',
+                            borderColor: 'rgb(255, 99, 132)',
+                            data: [20, 10],
+                        }]
+                    },
+
+                    // ここに設定オプションを書きます
+                    options: {}
+                });
+                /*]]>*/
+            </script>
         </div>
     </div>
 </main>
@@ -118,5 +164,6 @@
 
 
 <div th:replace="common :: foot-asset"></div>
+
 </body>
 </html>
