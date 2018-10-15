@@ -11,6 +11,8 @@ public class MemberDto {
     private String teamId;
     private String name;
     private Long money;
+    private Long fromMoneySum;
+    private Long toMoneySum;
     private Date createdAt;
     private Date updatedAt;
     private String deletedFlag;

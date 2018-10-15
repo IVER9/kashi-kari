@@ -1,5 +1,6 @@
 package com.herokuapp.kashikari.controller;
 
+import com.herokuapp.kashikari.dto.LoanDto;
 import com.herokuapp.kashikari.dto.MemberDto;
 import com.herokuapp.kashikari.entity.Member;
 import com.herokuapp.kashikari.entity.Team;
@@ -70,7 +71,19 @@ public class TeamController {
             MemberDto memberDto = new MemberDto();
             BeanUtils.copyProperties(member, memberDto);
             memberDto.setLoanFrom(loanService.getLoanFrom(member.getId()));
+            Long loanFromSumTime = (long) 0;
+            for(LoanDto from : memberDto.getLoanFrom()) {
+                Member fromMember = memberService.getById(from.getFromMemberId());
+                loanFromSumTime += from.getTime() * fromMember.getMoney();
+            }
+            memberDto.setFromMoneySum(loanFromSumTime);
+
+            Long loanToSumMoney = (long) 0;
             memberDto.setLoanTo(loanService.getLoanTo(member.getId()));
+            for(LoanDto to : memberDto.getLoanTo()) {
+                loanToSumMoney += to.getTime();
+            }
+            memberDto.setToMoneySum(loanToSumMoney * member.getMoney());
             memberDtos.add(memberDto);
         }
         model.addAttribute("memberDtoList",memberDtos);

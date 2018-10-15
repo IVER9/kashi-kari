@@ -88,15 +88,15 @@
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
     <div class="my-3 p-3 bg-white rounded shadow-sm">
-        <h6 class="border-bottom border-gray pb-2 mb-0">メンバー一覧</h6>
+        <h4 class="border-bottom border-gray pb-2 mb-0">メンバー一覧</h4>
         <div class="media text-muted pt-3" th:each="member : ${memberDtoList}">
             <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-                <div class="d-flex justify-content-between align-items-center w-100">
-                    <h4 class="text-gray-dark"  th:text="${member.name}">Full Name</h4>
-                    <a href="#" th:href="@{/team/} + ${team.id} + '/' + ${team.url} + '/member/' + ${member.id}  + '/setting'">設定</a>
+                <div class="d-flex justify-content-between align-items-center w-100 p-2 bg-dark text-white">
+                    <h5 class="text-gray-dark">[[${member.name}]]<small class="display-5 pt-2 pl-2"><span th:text="${member.money}"></span>円 / 時</small></h5>
+                    <a class="text-white" href="#" th:href="@{/team/} + ${team.id} + '/' + ${team.url} + '/member/' + ${member.id}  + '/setting'">> 設定</a>
                 </div>
-                <canvas th:id="'myChart-' + ${member.id}"></canvas>
-                <span class="pt-2 d-block">時給:<span th:text="${member.money}"></span>円　作成日時:<span th:text="${member.createdAt != null}? ${#dates.format(member.createdAt,'yyyy/MM/dd hh:mm')} : ''"></span>　更新日時:<span th:text="${member.updatedAt != null}? ${#dates.format(member.updatedAt,'yyyy/MM/dd hh:mm')} : ''"></span>　ID:<span th:text="${member.id}"></span></span>
+                <div class="chart-container mt-2 mb-3"><canvas th:id="'myChart-' + ${member.id}"></canvas></div>
+
                 <div class="pt-3">
                     <h5 class="pb-2"><span class="badge badge-danger">貸し</span></h5>
                     <ul class="list-group mb-3">
@@ -107,7 +107,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="d-flex justify-content-between align-items-center flex-wrap">
-                                        <div class="w-50"><strong><span th:text="${loan.time} * ${member.money}"></span>円</strong></div><form method="post" class="w-50 d-inline" th:action="@{/team/} + ${team.id} + '/' + ${team.url} + '/loan/' + ${loan.id}"><button type="submit" name="delete" class="btn btn-success w-100" style="font-size: 13px">奢った</button></form>
+                                        <div class="w-50"><strong><span th:text="${loan.time} * ${member.money}"></span>円</strong></div><form method="post" class="w-50 d-inline pt-2" th:action="@{/team/} + ${team.id} + '/' + ${team.url} + '/loan/' + ${loan.id}"><button type="submit" name="delete" class="btn btn-success w-100" style="font-size: 13px">奢った</button></form>
                                     </div>
                                 </div>
                             </div>
@@ -123,7 +123,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="d-flex justify-content-between align-items-center flex-wrap">
-                                        <div class="w-50"><strong><span th:text="${loan.time} * ${member.money}"></span>円</strong> </div><form method="post" class="w-50 d-inline" th:action="@{/team/} + ${team.id} + '/' + ${team.url} + '/loan/' + ${loan.id}"><button type="submit" name="delete" class="btn btn-primary w-100" style="font-size: 13px">奢ってもらった</button></form>
+                                        <div class="w-50"><strong><span th:text="${loan.time} * ${member.money}"></span>円</strong> </div><form method="post" class="w-50 d-inline pt-2" th:action="@{/team/} + ${team.id} + '/' + ${team.url} + '/loan/' + ${loan.id}"><button type="submit" name="delete" class="btn btn-primary w-100" style="font-size: 13px">奢られた</button></form>
                                     </div>
                                 </div>
                             </div>
@@ -134,25 +134,39 @@
             <script th:inline="javascript">
                 /*<![CDATA[*/
                 var memberId = /*[[${member.id}]]*/ 'memberId';
-                console.log(memberId);
+                var fromSum = /*[[${member.fromMoneySum}]]*/ 'fromMoneySum';
+                var toSum = /*[[${member.toMoneySum}]]*/ 'toMoneySum';
                 var ctx = document.getElementById('myChart-' + memberId).getContext('2d');
+                ctx.canvas.height = 50;
                 var chart = new Chart(ctx, {
                     // 作成したいチャートのタイプ
                     type: 'horizontalBar',
 
                     // データセットのデータ
                     data: {
-                        labels: ["貸し", "借り"],
+                        labels: ["貸し借り"],
                         datasets: [{
-                            label: "",
-                            backgroundColor: 'rgb(255, 99, 132)',
-                            borderColor: 'rgb(255, 99, 132)',
-                            data: [20, 10],
+                            label: "貸し",
+                            backgroundColor: ['#dc3545'],
+                            data: [fromSum * -1],
+                        },{
+                            label: "借り",
+                            backgroundColor: ['#ffc107'],
+                            data: [toSum],
                         }]
                     },
-
-                    // ここに設定オプションを書きます
-                    options: {}
+                    options: {
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      scales: {
+                            xAxes: [{
+                                stacked: true
+                            }],
+                            yAxes: [{
+                                stacked: true
+                            }]
+                        }
+                    }
                 });
                 /*]]>*/
             </script>
