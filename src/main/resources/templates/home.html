@@ -1,0 +1,65 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common :: head('貸し借り見える化')"></head>
+<body class="bg-light">
+<header th:replace="common::header"></header>
+<div class="jumbotron">
+    <div class="container">
+        <h1 class="display-4">あれやっといて！<small><small><small>をタダではやらない</small></small></small></h1>
+        <p class="pt-2">貸し借りを見える化して押し付けられっぱなしの日々にさよなら</p>
+        <p><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createTeam">
+            チームを追加
+        </button></p>
+    </div>
+</div>
+<main role="main" class="container">
+    <div class="alert alert-danger" role="alert" th:if="${teamCreateError}">チーム作成に失敗しました。</div>
+    <div class="alert alert-primary" role="alert" th:if="${teamDeleteSuccess}">チームを削除しました。</div>
+    <div class="modal fade" id="createTeam" tabindex="-1" role="dialog" aria-labelledby="createTeamLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form method="post" th:action="@{/team}">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="createTeamLabel">チーム登録</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="url">URL</label>
+                            <input type="text" name="url" class="form-control" id="url" placeholder="url">
+                            <small class="form-text text-muted">半角英数</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="name">チーム名</label>
+                            <input type="text" name="name" class="form-control" id="name" placeholder="チーム名">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">登録する</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="my-3 p-3 bg-white rounded shadow-sm">
+        <h6 class="border-bottom border-gray pb-2 mb-0">チーム一覧</h6>
+        <div class="media text-muted pt-3" th:each="team : ${teams}">
+            <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                <div class="d-flex justify-content-between align-items-center w-100">
+                    <strong class="text-gray-dark"  th:text="${team.name}">Full Name</strong>
+                    <a href="#" th:href="@{/team/} + ${team.id} + '/' + ${team.url}">詳細</a>
+                </div>
+                <span class="d-block">URL:<span th:text="${team.url}"></span>　ID:<span th:text="${team.id}"></span>　作成日時:<span th:text="${team.createdAt != null}? ${#dates.format(team.createdAt,'yyyy/MM/dd hh:mm')} : ''"></span></span>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+
+
+<div th:replace="common :: foot-asset"></div>
+</body>
+</html>

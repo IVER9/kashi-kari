@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common :: head('チーム設定 |' + ${team.name} + ' | 貸し借り見える化')"></head>
+<body class="bg-light">
+<header th:replace="common::header"></header>
+<div class="nav-scroller bg-white shadow-sm">
+    <nav class="nav nav-underline">
+        <a class="nav-link" th:href="@{/team/} + ${team.id} + '/' + ${team.url}" th:text="${team.name}">Dashboard</a>
+        <a class="nav-link active" th:href="@{/team/} + ${team.id} + '/' + ${team.url} + '/setting'">チーム設定</a>
+    </nav>
+</div>
+<main role="main" class="container">
+<div class="alert alert-danger" role="alert"  th:if="${teamUpdateError}">更新に失敗しました。</div>
+<div class="alert alert-danger" role="alert"  th:if="${teamDeleteError}">削除に失敗しました。</div>
+<form method="post" th:action="@{/team/} + ${team.id} + '/' + ${team.url} ">
+    <div class="form-group mt-3">
+        <label>チーム名</label>
+        <input type="text" name="name" class="form-control" id="name"  th:value="${team.name}" />
+    </div>
+    <button  class="btn btn-primary" type="submit" name="update">更新</button>
+    <button  class="btn btn-danger" type="submit" name="delete">チームの削除</button>
+</form>
+
+
+</main>
+    <div th:replace="common :: foot-asset"></div>
+</body>
+</html>

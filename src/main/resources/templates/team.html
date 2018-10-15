@@ -1,0 +1,183 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common :: head(${team.name} + ' | 貸し借り見える化')"></head>
+<body class="bg-light">
+<header th:replace="common::header"></header>
+<div class="nav-scroller bg-white shadow-sm">
+    <nav class="nav nav-underline">
+        <a class="nav-link active" th:href="@{/team/} + ${team.id} + '/' + ${team.url}" th:text="${team.name}">Dashboard</a>
+        <button type="button" class="nav-link border-0 bg-white" data-toggle="modal" data-target="#createLoan">
+            貸し借り登録
+        </button>
+        <button type="button" class="nav-link border-0 bg-white" data-toggle="modal" data-target="#createMember">
+            メンバー追加
+        </button>
+        <a class="nav-link" th:href="@{/team/} + ${team.id} + '/' + ${team.url} + '/setting'">チーム設定</a>
+    </nav>
+</div>
+<main role="main" class="container">
+<div class="alert alert-primary" role="alert"  th:if="${teamCreateSuccess}">チームを作成しました。このURLをブックマークしてお使いください。</div>
+<div class="alert alert-primary" role="alert"  th:if="${teamUpdateSuccess}">チーム情報を更新しました。</div>
+<div class="alert alert-danger" role="alert"  th:if="${memberCreateError}">メンバーの追加に失敗しました。</div>
+<div class="alert alert-primary" role="alert"  th:if="${memberCreateSuccess}">メンバーを追加しました。</div>
+<div class="alert alert-primary" role="alert"  th:if="${memberUpdateSuccess}">メンバー情報を更新しました。</div>
+    <div class="alert alert-primary" role="alert"  th:if="${loanCreateSuccess}">貸し借りを登録しました。</div>
+    <div class="alert alert-danger" role="alert"  th:if="${loanCreateError}">貸し借りの登録に失敗しました。</div>
+
+    <div class="modal fade" id="createMember" tabindex="-1" role="dialog" aria-labelledby="createMemberLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form method="post" th:action="@{/team/} + ${team.id} + '/' + ${team.url} + '/member'">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="createMemberLabel">メンバー登録</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="name">名前</label>
+                            <input type="text" name="name" class="form-control" id="name" placeholder="名前">
+                        </div>
+                        <div class="form-group">
+                            <label for="money">時給（円）</label>
+                            <input type="text" name="money" class="form-control" id="money" placeholder="800">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">登録する</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="createLoan" tabindex="-1" role="dialog" aria-labelledby="createLoanLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form method="post" th:action="@{/team/} + ${team.id} + '/' + ${team.url} + '/loan'">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="createLoanLabel">貸し借り登録</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="fromMemberId">誰が</label>
+                            <select id="fromMemberId" class="form-control" name="fromMemberId"><option th:each="member : ${members}" th:value="${member.id}" th:text="${member.name}"></option></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="toMemberId">誰に</label>
+                            <select id="toMemberId" class="form-control" name="toMemberId"><option th:each="member : ${members}" th:value="${member.id}" th:text="${member.name}"></option></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="task">何を</label>
+                            <input type="text" name="task" class="form-control" id="task" placeholder="雑用を">
+                        </div>
+                        <div class="form-group">
+                            <label for="time">何時間</label>
+                            <input type="text" name="time" class="form-control" id="time" placeholder="8">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">やってもらう</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
+    <div class="my-3 p-3 bg-white rounded shadow-sm">
+        <h4 class="border-bottom border-gray pb-2 mb-0">メンバー一覧</h4>
+        <div class="media text-muted pt-3" th:each="member : ${memberDtoList}">
+            <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                <div class="d-flex justify-content-between align-items-center w-100 p-2 bg-dark text-white">
+                    <h5 class="text-gray-dark">[[${member.name}]]<small class="display-5 pt-2 pl-2"><span th:text="${member.money}"></span>円 / 時</small></h5>
+                    <a class="text-white" href="#" th:href="@{/team/} + ${team.id} + '/' + ${team.url} + '/member/' + ${member.id}  + '/setting'">> 設定</a>
+                </div>
+                <div class="chart-container mt-2 mb-3"><canvas th:id="'myChart-' + ${member.id}"></canvas></div>
+
+                <div class="pt-3">
+                    <h5 class="pb-2"><span class="badge badge-danger">貸し</span></h5>
+                    <ul class="list-group mb-3">
+                        <li class="list-group-item list-group-item-light" th:each="loan : ${member.loanFrom}">
+                            <div class="row w-100 d-flex align-items-center flex-wrap">
+                                <div class="col-md-9">
+                                    <span th:text="${loan.toMemberName}"></span>に<span th:text="${loan.time}"></span>時間<span th:text="${loan.task}"></span>をやってもらったよ
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                        <div class="w-50"><strong><span th:text="${loan.time} * ${member.money}"></span>円</strong></div><form method="post" class="w-50 d-inline pt-2" th:action="@{/team/} + ${team.id} + '/' + ${team.url} + '/loan/' + ${loan.id}"><button type="submit" name="delete" class="btn btn-success w-100" style="font-size: 13px">奢った</button></form>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </li>
+                    </ul>
+                    <h5 class="pb-2"><span class="badge badge-warning">借り</span></h5>
+                    <ul class="list-group">
+                        <li class="list-group-item list-group-item-light " th:each="loan : ${member.loanTo}">
+                            <div class="row w-100 d-flex align-items-center flex-wrap">
+                                <div class="col-md-9">
+                                    <span th:text="${loan.fromMemberName}"></span>に言われて<span th:text="${loan.time}"></span>時間<span th:text="${loan.task}"></span>をやらされるよ
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                        <div class="w-50"><strong><span th:text="${loan.time} * ${member.money}"></span>円</strong> </div><form method="post" class="w-50 d-inline pt-2" th:action="@{/team/} + ${team.id} + '/' + ${team.url} + '/loan/' + ${loan.id}"><button type="submit" name="delete" class="btn btn-primary w-100" style="font-size: 13px">奢られた</button></form>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <script th:inline="javascript">
+                /*<![CDATA[*/
+                var memberId = /*[[${member.id}]]*/ 'memberId';
+                var fromSum = /*[[${member.fromMoneySum}]]*/ 'fromMoneySum';
+                var toSum = /*[[${member.toMoneySum}]]*/ 'toMoneySum';
+                var ctx = document.getElementById('myChart-' + memberId).getContext('2d');
+                ctx.canvas.height = 50;
+                var chart = new Chart(ctx, {
+                    // 作成したいチャートのタイプ
+                    type: 'horizontalBar',
+
+                    // データセットのデータ
+                    data: {
+                        labels: ["貸し借り"],
+                        datasets: [{
+                            label: "貸し",
+                            backgroundColor: ['#dc3545'],
+                            data: [fromSum * -1],
+                        },{
+                            label: "借り",
+                            backgroundColor: ['#ffc107'],
+                            data: [toSum],
+                        }]
+                    },
+                    options: {
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      scales: {
+                            xAxes: [{
+                                stacked: true
+                            }],
+                            yAxes: [{
+                                stacked: true
+                            }]
+                        }
+                    }
+                });
+                /*]]>*/
+            </script>
+        </div>
+    </div>
+</main>
+
+
+
+
+<div th:replace="common :: foot-asset"></div>
+
+</body>
+</html>
