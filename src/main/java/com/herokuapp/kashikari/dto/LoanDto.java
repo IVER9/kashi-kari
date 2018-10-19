@@ -11,6 +11,7 @@ public class LoanDto {
     private String fromMemberName;
     private String toMemberId;
     private String toMemberName;
+    private Long toMemberMoney;
     private Long time;
     private String task;
     private Date createdAt;

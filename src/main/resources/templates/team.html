@@ -107,7 +107,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="d-flex justify-content-between align-items-center flex-wrap">
-                                        <div class="w-50"><strong><span th:text="${loan.time} * ${member.money}"></span>円</strong></div><form method="post" class="w-50 d-inline pt-2" th:action="@{/team/} + ${team.id} + '/' + ${team.url} + '/loan/' + ${loan.id}"><button type="submit" name="delete" class="btn btn-success w-100" style="font-size: 13px">奢った</button></form>
+                                        <div class="w-50"><strong><span th:text="${loan.time} * ${loan.toMemberMoney}"></span>円</strong></div><form method="post" class="w-50 d-inline pt-2" th:action="@{/team/} + ${team.id} + '/' + ${team.url} + '/loan/' + ${loan.id}"><button type="submit" name="delete" class="btn btn-success w-100" style="font-size: 13px">奢った</button></form>
                                     </div>
                                 </div>
                             </div>
