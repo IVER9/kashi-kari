@@ -17,7 +17,7 @@ public interface LoanMapper {
     @Update("UPDATE loan SET deleted_flag = '1', updated_at = now() WHERE id = #{id}")
     void deleteByLoanId(String loanId);
 
-    @Select("SELECT l.*, m.name as 'fromMemberName', m2.name as 'toMemberName' FROM loan  l\n" +
+    @Select("SELECT l.*, m.name as 'fromMemberName', m2.name as 'toMemberName', m2.money as 'toMemberMoney' FROM loan  l\n" +
             "\tLEFT JOIN member m ON l.from_member_id = m.id\n" +
             "\tLEFT JOIN member m2 ON l.to_member_id = m2.id\n" +
             "\tWHERE l.from_member_id = #{id} and l.deleted_flag = '0' ORDER BY l.updated_at;")
