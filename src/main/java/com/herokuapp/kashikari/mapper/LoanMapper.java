@@ -14,7 +14,7 @@ public interface LoanMapper {
     @Insert("INSERT INTO loan( id, from_member_id, to_member_id, time, task, created_at, updated_at, deleted_flag) VALUES ( #{id}, #{fromMemberId}, #{toMemberId}, #{time}, #{task}, now(), now(), '0')")
     void create(Loan loan);
 
-    @Update("UPDATE loan SET deleted_flag = '1' WHERE id = #{id}")
+    @Update("UPDATE loan SET deleted_flag = '1', updated_at = now() WHERE id = #{id}")
     void deleteByLoanId(String loanId);
 
     @Select("SELECT l.*, m.name as 'fromMemberName', m2.name as 'toMemberName' FROM loan  l\n" +
